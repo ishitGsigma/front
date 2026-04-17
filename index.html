@@ -2,9 +2,9 @@
 
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Front</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emotion Finder</title>
 
   <style>
     * {
@@ -15,66 +15,61 @@
     }
 
     body {
+      height: 100vh;
       background: radial-gradient(circle at top, #1e293b, #020617);
       color: #e2e8f0;
-      overflow-x: hidden;
-    }
-
-    /* NAVBAR */
-    header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 20px 10%;
-      position: sticky;
-      top: 0;
-      backdrop-filter: blur(10px);
-      background: rgba(2, 6, 23, 0.6);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      justify-content: center;
     }
 
-    header h2 {
-      color: #60a5fa;
-      font-weight: 600;
-    }
-
-    nav a {
-      margin-left: 25px;
-      color: #94a3b8;
-      text-decoration: none;
-      transition: 0.3s;
-    }
-
-    nav a:hover {
-      color: #fff;
-    }
-
-    /* HERO */
-    .hero {
+    .container {
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 0 40px rgba(0,0,0,0.4);
       text-align: center;
-      padding: 120px 20px 80px;
-      position: relative;
     }
 
-    .hero h1 {
-      font-size: 3.5rem;
+    h1 {
+      margin-bottom: 10px;
+      font-size: 2.2rem;
       background: linear-gradient(90deg, #3b82f6, #22c55e);
       -webkit-background-clip: text;
       color: transparent;
+    }
+
+    p {
+      color: #94a3b8;
       margin-bottom: 20px;
     }
 
-    .hero p {
-      color: #94a3b8;
-      max-width: 600px;
-      margin: auto;
-      margin-bottom: 30px;
-    }
-
-    .btn {
-      padding: 14px 28px;
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 15px;
       border-radius: 12px;
       border: none;
+      outline: none;
+      resize: none;
+      font-size: 1rem;
+      background: rgba(255,255,255,0.08);
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    textarea::placeholder {
+      color: #64748b;
+    }
+
+    button {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 12px;
       background: linear-gradient(135deg, #3b82f6, #22c55e);
       color: white;
       font-size: 1rem;
@@ -83,81 +78,33 @@
       box-shadow: 0 0 20px rgba(59,130,246,0.4);
     }
 
-    .btn:hover {
-      transform: translateY(-3px) scale(1.03);
+    button:hover {
+      transform: translateY(-2px);
       box-shadow: 0 0 30px rgba(59,130,246,0.6);
     }
 
-    /* GLOW BACKGROUND BLOBS */
-    .blob {
-      position: absolute;
-      width: 300px;
-      height: 300px;
-      background: #3b82f6;
-      filter: blur(120px);
-      opacity: 0.3;
-      animation: float 10s infinite ease-in-out;
+    .result {
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: none;
     }
 
-    .blob2 {
-      background: #22c55e;
-      right: 10%;
-      top: 20%;
-      animation-delay: 3s;
-    }
-
-    .blob1 {
-      left: 10%;
-      top: 10%;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(40px); }
-    }
-
-    /* FEATURES */
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 25px;
-      padding: 60px 10%;
-    }
-
-    .card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 25px;
-      backdrop-filter: blur(10px);
-      transition: 0.3s;
-    }
-
-    .card:hover {
-      transform: translateY(-8px);
-      border-color: rgba(59,130,246,0.5);
-      box-shadow: 0 0 20px rgba(59,130,246,0.2);
-    }
-
-    .card h3 {
+    .emotion {
+      font-size: 1.5rem;
       margin-bottom: 10px;
       color: #60a5fa;
     }
 
-    /* CTA */
-    .cta {
-      text-align: center;
-      padding: 100px 20px;
-    }
-
-    .cta h2 {
-      font-size: 2.2rem;
-      margin-bottom: 20px;
+    .confidence {
+      color: #94a3b8;
     }
 
     footer {
-      text-align: center;
-      padding: 20px;
+      margin-top: 20px;
+      font-size: 0.8rem;
       color: #64748b;
     }
   </style>
@@ -166,63 +113,54 @@
 
 <body>
 
-  <header>
-    <h2>⚡ Front</h2>
-    <nav>
-      <a href="#">Home</a>
-      <a href="#features">Features</a>
-      <a href="#">Docs</a>
-      <a href="#">Contact</a>
-    </nav>
-  </header>
-
-  <section class="hero">
-    <div class="blob blob1"></div>
-    <div class="blob blob2"></div>
+  <div class="container">
+    <h1>🧠 Emotion Finder</h1>
+    <p>Type a sentence and detect the emotion behind it</p>
 
 ```
-<h1>Next-Gen Web Experience</h1>
-<p>Beautiful, fast, and modern frontend design with smooth interactions and premium UI aesthetics.</p>
-<button class="btn" onclick="scrollToFeatures()">Explore</button>
+<textarea id="inputText" placeholder="e.g. I feel amazing today!"></textarea>
+
+<button onclick="analyzeEmotion()">Analyze Emotion</button>
+
+<div class="result" id="resultBox">
+  <div class="emotion" id="emotionText"></div>
+  <div class="confidence" id="confidenceText"></div>
+</div>
+
+<footer>Built with ⚡</footer>
 ```
 
-  </section>
-
-  <section class="features" id="features">
-    <div class="card">
-      <h3>⚡ Lightning Fast</h3>
-      <p>Minimal and optimized for blazing performance.</p>
-    </div>
-    <div class="card">
-      <h3>🎨 Premium Design</h3>
-      <p>Glassmorphism, gradients, and smooth UI.</p>
-    </div>
-    <div class="card">
-      <h3>📱 Fully Responsive</h3>
-      <p>Perfect on all devices and screen sizes.</p>
-    </div>
-    <div class="card">
-      <h3>🔧 Easy to Extend</h3>
-      <p>Scale it into a full product effortlessly.</p>
-    </div>
-  </section>
-
-  <section class="cta">
-    <h2>Ready to Build Something Serious?</h2>
-    <button class="btn" onclick="launch()">Get Started 🚀</button>
-  </section>
-
-  <footer>
-    © 2026 Front — Designed to impress.
-  </footer>
+  </div>
 
   <script>
-    function scrollToFeatures() {
-      document.getElementById("features").scrollIntoView({ behavior: "smooth" });
-    }
+    function analyzeEmotion() {
+      const text = document.getElementById("inputText").value.toLowerCase();
+      const resultBox = document.getElementById("resultBox");
+      const emotionText = document.getElementById("emotionText");
+      const confidenceText = document.getElementById("confidenceText");
 
-    function launch() {
-      alert("Now you're building at a different level 🔥");
+      if (!text.trim()) {
+        alert("Please enter some text");
+        return;
+      }
+
+      let emotion = "Neutral";
+      let confidence = Math.floor(Math.random() * 20) + 70;
+
+      if (text.includes("happy") || text.includes("love") || text.includes("great")) {
+        emotion = "😊 Happy";
+      } else if (text.includes("sad") || text.includes("bad") || text.includes("depressed")) {
+        emotion = "😢 Sad";
+      } else if (text.includes("angry") || text.includes("hate")) {
+        emotion = "😡 Angry";
+      } else if (text.includes("excited")) {
+        emotion = "🤩 Excited";
+      }
+
+      emotionText.innerText = "Emotion: " + emotion;
+      confidenceText.innerText = "Confidence: " + confidence + "%";
+
+      resultBox.style.display = "block";
     }
   </script>
 
