@@ -1,119 +1,230 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Emotion Mirror</title>
+  <title>Front</title>
 
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0a0a0f;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1e293b, #020617);
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+
+    /* NAVBAR */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 10%;
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(10px);
+      background: rgba(2, 6, 23, 0.6);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    header h2 {
+      color: #60a5fa;
+      font-weight: 600;
+    }
+
+    nav a {
+      margin-left: 25px;
+      color: #94a3b8;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      color: #fff;
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 120px 20px 80px;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      background: linear-gradient(90deg, #3b82f6, #22c55e);
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      color: #94a3b8;
+      max-width: 600px;
+      margin: auto;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #3b82f6, #22c55e);
       color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 0 20px rgba(59,130,246,0.4);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 0 30px rgba(59,130,246,0.6);
+    }
+
+    /* GLOW BACKGROUND BLOBS */
+    .blob {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: #3b82f6;
+      filter: blur(120px);
+      opacity: 0.3;
+      animation: float 10s infinite ease-in-out;
+    }
+
+    .blob2 {
+      background: #22c55e;
+      right: 10%;
+      top: 20%;
+      animation-delay: 3s;
+    }
+
+    .blob1 {
+      left: 10%;
+      top: 10%;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(40px); }
+    }
+
+    /* FEATURES */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      padding: 60px 10%;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 25px;
+      backdrop-filter: blur(10px);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(59,130,246,0.5);
+      box-shadow: 0 0 20px rgba(59,130,246,0.2);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      color: #60a5fa;
+    }
+
+    /* CTA */
+    .cta {
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    .cta h2 {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+    }
+
+    footer {
       text-align: center;
       padding: 20px;
-    }
-
-    video {
-      width: 100%;
-      max-width: 400px;
-      border-radius: 10px;
-    }
-
-    button {
-      margin-top: 10px;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    #startBtn { background: #7c6af7; color: white; }
-    #detectBtn { background: #f76a8a; color: white; display: none; }
-
-    .track {
-      display: block;
-      margin-top: 8px;
-      color: #fff;
-      text-decoration: none;
-      background: #1a1a22;
-      padding: 8px;
-      border-radius: 6px;
+      color: #64748b;
     }
   </style>
+
 </head>
 
 <body>
 
-<h1>Emotion Mirror</h1>
+  <header>
+    <h2>⚡ Front</h2>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#features">Features</a>
+      <a href="#">Docs</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
 
-<video id="video" autoplay playsinline></video>
+  <section class="hero">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
 
-<canvas id="canvas" style="display:none;"></canvas>
+```
+<h1>Next-Gen Web Experience</h1>
+<p>Beautiful, fast, and modern frontend design with smooth interactions and premium UI aesthetics.</p>
+<button class="btn" onclick="scrollToFeatures()">Explore</button>
+```
 
-<br>
+  </section>
 
-<button id="startBtn" onclick="startCamera()">Start Camera</button>
-<button id="detectBtn" onclick="detectEmotion()">Detect Emotion</button>
+  <section class="features" id="features">
+    <div class="card">
+      <h3>⚡ Lightning Fast</h3>
+      <p>Minimal and optimized for blazing performance.</p>
+    </div>
+    <div class="card">
+      <h3>🎨 Premium Design</h3>
+      <p>Glassmorphism, gradients, and smooth UI.</p>
+    </div>
+    <div class="card">
+      <h3>📱 Fully Responsive</h3>
+      <p>Perfect on all devices and screen sizes.</p>
+    </div>
+    <div class="card">
+      <h3>🔧 Easy to Extend</h3>
+      <p>Scale it into a full product effortlessly.</p>
+    </div>
+  </section>
 
-<p id="status"></p>
+  <section class="cta">
+    <h2>Ready to Build Something Serious?</h2>
+    <button class="btn" onclick="launch()">Get Started 🚀</button>
+  </section>
 
-<div id="results"></div>
+  <footer>
+    © 2026 Front — Designed to impress.
+  </footer>
 
-<script>
-const BACKEND_URL = "https://ishitgovilcoder-emotion-mirror-updated1.hf.space";
+  <script>
+    function scrollToFeatures() {
+      document.getElementById("features").scrollIntoView({ behavior: "smooth" });
+    }
 
-let stream;
-
-async function startCamera() {
-  stream = await navigator.mediaDevices.getUserMedia({ video: true });
-  document.getElementById("video").srcObject = stream;
-  document.getElementById("detectBtn").style.display = "inline-block";
-  setStatus("Camera ready");
-}
-
-async function detectEmotion() {
-  const video = document.getElementById("video");
-  const canvas = document.getElementById("canvas");
-
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  canvas.getContext("2d").drawImage(video, 0, 0);
-
-  const image = canvas.toDataURL("image/jpeg").split(",")[1];
-
-  setStatus("Detecting...");
-
-  const res = await fetch(BACKEND_URL + "/detect", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ image })
-  });
-
-  const data = await res.json();
-
-  show(data);
-}
-
-function show(data) {
-  const div = document.getElementById("results");
-
-  div.innerHTML =
-    "<h3>" + data.emotion + "</h3>" +
-    "<p>" + Math.round((data.confidence || 0) * 100) + "%</p>" +
-    "<h4>Tracks</h4>" +
-    (data.tracks || []).map(t =>
-      "<a class='track' href='" + t.spotify_url + "' target='_blank'>" +
-      t.name + " - " + t.artist +
-      "</a>"
-    ).join("");
-}
-
-function setStatus(msg) {
-  document.getElementById("status").innerText = msg;
-}
-</script>
+    function launch() {
+      alert("Now you're building at a different level 🔥");
+    }
+  </script>
 
 </body>
 </html>
