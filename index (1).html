@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emotion Mirror</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --border: #1e1e2e;
+      --accent: #7c6af7;
+      --accent2: #f76a8a;
+      --text: #e8e8f0;
+      --muted: #6b6b80;
+      --green: #4ade80;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    /* Ambient background blobs */
+    body::before {
+      content: '';
+      position: fixed;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(124,106,247,0.12) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(247,106,138,0.10) 0%, transparent 70%);
+      bottom: -80px; right: -80px;
+      pointer-events: none;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+    }
+
+    header p {
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: 1rem;
+      font-weight: 300;
+    }
+
+    .main-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Camera area */
+    .camera-wrapper {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #0d0d14;
+      aspect-ratio: 4/3;
+      border: 1px solid var(--border);
+    }
+
+    #video, #canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    #canvas { display: none; }
+
+    .camera-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .camera-overlay svg {
+      opacity: 0.4;
+    }
+
+    /* Corner brackets */
+    .corner {
+      position: absolute;
+      width: 24px; height: 24px;
+      border-color: var(--accent);
+      border-style: solid;
+      opacity: 0.6;
+    }
+    .corner.tl { top: 12px; left: 12px; border-width: 2px 0 0 2px; border-radius: 4px 0 0 0; }
+    .corner.tr { top: 12px; right: 12px; border-width: 2px 2px 0 0; border-radius: 0 4px 0 0; }
+    .corner.bl { bottom: 12px; left: 12px; border-width: 0 0 2px 2px; border-radius: 0 0 0 4px; }
+    .corner.br { bottom: 12px; right: 12px; border-width: 0 2px 2px 0; border-radius: 0 0 4px 0; }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    button {
+      flex: 1;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    #startBtn {
+      background: var(--accent);
+      color: white;
+    }
+    #startBtn:hover { background: #6a58e0; transform: translateY(-1px); }
+
+    #captureBtn {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      display: none;
+    }
+    #captureBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+    #captureBtn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Status */
+    #status {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      min-height: 20px;
+    }
+
+    #status.loading { color: var(--accent); }
+    #status.error { color: var(--accent2); }
+    #status.success { color: var(--green); }
+
+    /* Results */
+    #results { display: none; }
+
+    .emotion-badge {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #0d0d14;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+
+    .emotion-emoji {
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    .emotion-info h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-transform: capitalize;
+      color: var(--text);
+    }
+
+    .emotion-info p {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .confidence-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      margin-top: 10px;
+      overflow: hidden;
+      width: 160px;
+    }
+
+    .confidence-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+
+    .tracks-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .track-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .track-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #0d0d14;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s ease;
+    }
+
+    .track-item:hover {
+      border-color: var(--accent);
+      background: #111118;
+      transform: translateX(4px);
+    }
+
+    .track-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      width: 20px;
+      text-align: center;
+    }
+
+    .track-info { flex: 1; min-width: 0; }
+
+    .track-name {
+      font-weight: 500;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-artist {
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .spotify-icon {
+      width: 20px; height: 20px;
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    .track-item:hover .spotify-icon { opacity: 1; }
+
+    /* Try again */
+    #tryAgainBtn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      margin-top: 8px;
+      display: none;
+    }
+    #tryAgainBtn:hover { border-color: var(--accent); color: var(--text); }
+
+    /* Backend URL input */
+    .url-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .url-row label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .url-row input {
+      flex: 1;
+      background: #0d0d14;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .url-row input:focus { border-color: var(--accent); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .pulsing { animation: pulse 1.2s infinite; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Emotion Mirror</h1>
+    <p>Look into the camera. We'll read your mood and queue the music.</p>
+  </header>
+
+  <div class="main-card">
+
+    <!-- Backend URL -->
+    <div class="url-row">
+      <label>Backend URL:</label>
+      <input type="text" id="backendUrl" value="http://127.0.0.1:8000" placeholder="http://127.0.0.1:8000"/>
+    </div>
+
+    <!-- Camera -->
+    <div class="camera-wrapper" id="cameraWrapper">
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas"></canvas>
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+      <div class="camera-overlay" id="cameraOverlay">
+        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
+        </svg>
+        <span>Click "Start Camera" to begin</span>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="btn-row">
+      <button id="startBtn" onclick="startCamera()">📷 Start Camera</button>
+      <button id="captureBtn" onclick="captureAndDetect()" disabled>✨ Detect Emotion</button>
+    </div>
+
+    <div id="status"></div>
+
+    <!-- Results -->
+    <div id="results">
+      <div class="emotion-badge">
+        <div class="emotion-emoji" id="emotionEmoji">😐</div>
+        <div class="emotion-info">
+          <h2 id="emotionLabel">neutral</h2>
+          <p id="confidenceText">Confidence: —</p>
+          <div class="confidence-bar">
+            <div class="confidence-fill" id="confidenceFill" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tracks-label">🎵 Recommended Tracks</div>
+      <div class="track-list" id="trackList"></div>
+    </div>
+
+    <button id="tryAgainBtn" onclick="resetUI()">↩ Try Again</button>
+  </div>
+
+  <script>
+    const EMOTION_EMOJIS = {
+      happy: '😄', sad: '😢', angry: '😠', surprise: '😲',
+      fear: '😨', disgust: '🤢', neutral: '😐', calm: '😌'
+    };
+
+    let stream = null;
+
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const video = document.getElementById('video');
+        video.srcObject = stream;
+        video.onloadedmetadata = () => {
+          document.getElementById('cameraOverlay').style.display = 'none';
+          document.getElementById('captureBtn').style.display = 'block';
+          document.getElementById('captureBtn').disabled = false;
+          document.getElementById('startBtn').textContent = '🔄 Restart Camera';
+          setStatus('Camera ready! Position your face and click Detect Emotion.', '');
+        };
+      } catch (err) {
+        setStatus('Camera access denied. Please allow camera permission.', 'error');
+      }
+    }
+
+    async function captureAndDetect() {
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      const captureBtn = document.getElementById('captureBtn');
+
+      // Capture frame
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      const base64Image = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+
+      captureBtn.disabled = true;
+      setStatus('Analyzing your emotion...', 'loading pulsing');
+      document.getElementById('results').style.display = 'none';
+      document.getElementById('tryAgainBtn').style.display = 'none';
+
+      const backendUrl = document.getElementById('backendUrl').value.replace(/\/$/, '');
+
+      try {
+        const res = await fetch(`${backendUrl}/detect`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64Image })
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || `Server error ${res.status}`);
+        }
+
+        const data = await res.json();
+        showResults(data);
+
+      } catch (err) {
+        setStatus(`Error: ${err.message}`, 'error');
+        captureBtn.disabled = false;
+      }
+    }
+
+    function showResults(data) {
+      const emotion = (data.emotion || 'neutral').toLowerCase();
+      const confidence = data.confidence ? Math.round(data.confidence * 100) : null;
+      const tracks = data.tracks || [];
+
+      document.getElementById('emotionEmoji').textContent = EMOTION_EMOJIS[emotion] || '🎭';
+      document.getElementById('emotionLabel').textContent = emotion;
+      document.getElementById('confidenceText').textContent = confidence ? `Confidence: ${confidence}%` : '';
+      document.getElementById('confidenceFill').style.width = confidence ? `${confidence}%` : '0%';
+
+      // Render tracks
+      const trackList = document.getElementById('trackList');
+      trackList.innerHTML = '';
+
+      if (tracks.length === 0) {
+        trackList.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;text-align:center;padding:16px">No tracks returned. Check your Spotify credentials.</p>';
+      } else {
+        tracks.forEach((track, i) => {
+          const name = track.name || track.track_name || 'Unknown Track';
+          const artist = track.artist || track.artist_name || '';
+          const url = track.url || track.spotify_url || track.external_url || '#';
+
+          trackList.innerHTML += `
+            <a class="track-item" href="${url}" target="_blank" rel="noopener">
+              <span class="track-num">${i + 1}</span>
+              <div class="track-info">
+                <div class="track-name">${name}</div>
+                ${artist ? `<div class="track-artist">${artist}</div>` : ''}
+              </div>
+              <svg class="spotify-icon" viewBox="0 0 24 24" fill="#1DB954">
+                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.623.623 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 11-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.52-.974c3.632-1.102 8.147-.568 11.233 1.329a.78.78 0 01.257 1.073zm.105-2.835c-3.223-1.914-8.54-2.09-11.618-1.156a.935.935 0 11-.543-1.79c3.533-1.072 9.404-.865 13.115 1.338a.935.935 0 01-.954 1.608z"/>
+              </svg>
+            </a>`;
+        });
+      }
+
+      setStatus(`Detected: ${emotion} ${confidence ? `(${confidence}% confidence)` : ''}`, 'success');
+      document.getElementById('results').style.display = 'block';
+      document.getElementById('tryAgainBtn').style.display = 'block';
+      document.getElementById('captureBtn').disabled = false;
+    }
+
+    function resetUI() {
+      document.getElementById('results').style.display = 'none';
+      document.getElementById('tryAgainBtn').style.display = 'none';
+      setStatus('Ready! Click Detect Emotion again.', '');
+      document.getElementById('captureBtn').disabled = false;
+    }
+
+    function setStatus(msg, cls) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = cls || '';
+    }
+  </script>
+</body>
+</html>
