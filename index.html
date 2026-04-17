@@ -2,110 +2,130 @@
 
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Emotion Finder</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emotion Mirror</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 
   <style>
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
-      font-family: "Inter", sans-serif;
     }
 
     body {
-      height: 100vh;
-      background: radial-gradient(circle at top, #1e293b, #020617);
-      color: #e2e8f0;
+      margin: 0;
+      font-family: "DM Sans", sans-serif;
+      background: radial-gradient(circle at top, #151522, #050507);
+      color: #e8e8f0;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-    }
-
-    .container {
-      width: 90%;
-      max-width: 600px;
       padding: 30px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 0 40px rgba(0,0,0,0.4);
+    }
+
+    header {
       text-align: center;
+      margin-bottom: 30px;
     }
 
-    h1 {
-      margin-bottom: 10px;
-      font-size: 2.2rem;
-      background: linear-gradient(90deg, #3b82f6, #22c55e);
+    header h1 {
+      font-family: "Syne", sans-serif;
+      font-size: 2.8rem;
+      background: linear-gradient(135deg, #7c6af7, #f76a8a);
       -webkit-background-clip: text;
-      color: transparent;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
     }
 
-    p {
-      color: #94a3b8;
-      margin-bottom: 20px;
+    header p {
+      color: #aaa;
     }
 
-    textarea {
+    .card {
       width: 100%;
-      height: 120px;
-      padding: 15px;
-      border-radius: 12px;
-      border: none;
-      outline: none;
-      resize: none;
-      font-size: 1rem;
-      background: rgba(255,255,255,0.08);
-      color: white;
-      margin-bottom: 20px;
-    }
-
-    textarea::placeholder {
-      color: #64748b;
-    }
-
-    button {
-      padding: 14px 28px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #3b82f6, #22c55e);
-      color: white;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 0 20px rgba(59,130,246,0.4);
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 30px rgba(59,130,246,0.6);
-    }
-
-    .result {
-      margin-top: 25px;
-      padding: 20px;
-      border-radius: 15px;
-      background: rgba(255,255,255,0.06);
+      max-width: 540px;
+      background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 20px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 40px rgba(0,0,0,0.5);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      box-shadow: 0 0 60px rgba(124,106,247,0.2);
+    }
+
+    video, canvas {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    canvas { display: none; }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    #startBtn {
+      background: #7c6af7;
+      color: white;
+    }
+
+    #startBtn:hover {
+      background: #6a5af0;
+    }
+
+    #detectBtn {
+      background: linear-gradient(135deg, #7c6af7, #f76a8a);
+      color: white;
       display: none;
     }
 
-    .emotion {
-      font-size: 1.5rem;
-      margin-bottom: 10px;
-      color: #60a5fa;
+    #detectBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(247,106,138,0.5);
     }
 
-    .confidence {
-      color: #94a3b8;
+    #status {
+      margin-top: 12px;
+      text-align: center;
+      font-size: 14px;
+      color: #aaa;
     }
 
-    footer {
-      margin-top: 20px;
-      font-size: 0.8rem;
-      color: #64748b;
+    #results {
+      margin-top: 15px;
+    }
+
+    .track {
+      display: block;
+      background: rgba(255,255,255,0.05);
+      padding: 12px;
+      margin-top: 8px;
+      border-radius: 10px;
+      color: white;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .track:hover {
+      background: rgba(124,106,247,0.2);
+      transform: translateX(5px);
+    }
+
+    h3, h4 {
+      margin-top: 10px;
     }
   </style>
 
@@ -113,56 +133,91 @@
 
 <body>
 
-  <div class="container">
-    <h1>🧠 Emotion Finder</h1>
-    <p>Type a sentence and detect the emotion behind it</p>
+<header>
+  <h1>Emotion Mirror</h1>
+  <p>Detect your emotion and get music 🎧</p>
+</header>
 
-```
-<textarea id="inputText" placeholder="e.g. I feel amazing today!"></textarea>
+<div class="card">
 
-<button onclick="analyzeEmotion()">Analyze Emotion</button>
+<video id="video" autoplay playsinline></video> <canvas id="canvas"></canvas>
 
-<div class="result" id="resultBox">
-  <div class="emotion" id="emotionText"></div>
-  <div class="confidence" id="confidenceText"></div>
+<button class="btn" id="startBtn" onclick="startCamera()">Start Camera</button> <button class="btn" id="detectBtn" onclick="detectEmotion()">Detect Emotion</button>
+
+  <div id="status"></div>
+  <div id="results"></div>
+
 </div>
 
-<footer>Built with ⚡</footer>
-```
+<script>
+const BACKEND_URL = "https://ishitgovilcoder-emotion-mirror-updated1.hf.space";
 
-  </div>
+let stream;
 
-  <script>
-    function analyzeEmotion() {
-      const text = document.getElementById("inputText").value.toLowerCase();
-      const resultBox = document.getElementById("resultBox");
-      const emotionText = document.getElementById("emotionText");
-      const confidenceText = document.getElementById("confidenceText");
+async function startCamera() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    document.getElementById("video").srcObject = stream;
 
-      if (!text.trim()) {
-        alert("Please enter some text");
-        return;
-      }
+    document.getElementById("detectBtn").style.display = "block";
+    setStatus("Camera ready ✔");
+  } catch (err) {
+    setStatus("Camera error: " + err.message);
+  }
+}
 
-      let emotion = "Neutral";
-      let confidence = Math.floor(Math.random() * 20) + 70;
+async function detectEmotion() {
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
 
-      if (text.includes("happy") || text.includes("love") || text.includes("great")) {
-        emotion = "😊 Happy";
-      } else if (text.includes("sad") || text.includes("bad") || text.includes("depressed")) {
-        emotion = "😢 Sad";
-      } else if (text.includes("angry") || text.includes("hate")) {
-        emotion = "😡 Angry";
-      } else if (text.includes("excited")) {
-        emotion = "🤩 Excited";
-      }
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
 
-      emotionText.innerText = "Emotion: " + emotion;
-      confidenceText.innerText = "Confidence: " + confidence + "%";
+  ctx.drawImage(video, 0, 0);
 
-      resultBox.style.display = "block";
-    }
-  </script>
+  const image = canvas.toDataURL("image/jpeg").split(",")[1];
+
+  setStatus("Detecting emotion...");
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/detect`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image })
+    });
+
+    const data = await res.json();
+    showResults(data);
+
+  } catch (err) {
+    setStatus("Error: " + err.message);
+  }
+}
+
+function showResults(data) {
+  const div = document.getElementById("results");
+
+  const tracks = data.tracks || [];
+
+  div.innerHTML = `
+    <h3>Emotion: ${data.emotion}</h3>
+    <p>Confidence: ${Math.round((data.confidence || 0) * 100)}%</p>
+    <h4>Recommended Tracks:</h4>
+    ${tracks.map(t => `
+      <a class="track" href="${t.spotify_url}" target="_blank">
+        🎵 ${t.name} - ${t.artist}
+      </a>
+    `).join("")}
+  `;
+
+  setStatus("Done ✔");
+}
+
+function setStatus(msg) {
+  document.getElementById("status").innerText = msg;
+}
+</script>
 
 </body>
 </html>
